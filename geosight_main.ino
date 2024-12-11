@@ -1,8 +1,16 @@
-#include <DFRobotDFPlayerMini.h>
+/**
+ * @author rumi (RY786)
+ * zayu7680@colorado.edu
+ * Library credit to the DFRobot team, and Angelo Qiao
+ */
+
+
+
+#include <DFRobotDFPlayerMini.h> //Use of the DFPlayerRobotMini library, from the DFRobot team
 
 DFRobotDFPlayerMini myDFPlayer;
 
-// Digital Pins 44-53
+// Digital Pins 44-53 for button assignments
 const int buttonPin37 = 37;
 const int buttonPin36 = 36;
 const int buttonPin38 = 38;
@@ -22,7 +30,7 @@ const int buttonPin51 = 51;
 const int buttonPin52 = 52;
 const int buttonPin53 = 53;
 
-// Analog Pins 9-15
+// Analog Pins 9-15 used for certain buttons that reached these pins better (wire length)
 const int buttonPin9 = A9;
 const int buttonPin10 = A10;
 const int buttonPin11 = A11;
@@ -32,12 +40,12 @@ const int buttonPin14 = A14;
 const int buttonPin15 = A15;
 
 void setup() {
-  // Start serial communication
+  // Start serial communication for monitor and DFPlayer-Arduino communications
   Serial.begin(9600);
   Serial1.begin(9600);
 
   // Set button pins as input with internal pull-up resistors
-  pinMode(buttonPin50, INPUT_PULLUP);  // No internal pull-up resistor needed (connected to 5V)
+  pinMode(buttonPin50, INPUT_PULLUP);  
   pinMode(buttonPin49, INPUT_PULLUP);
   pinMode(buttonPin48, INPUT_PULLUP);
   pinMode(buttonPin47, INPUT_PULLUP);
@@ -63,7 +71,10 @@ void setup() {
   pinMode(buttonPin13, INPUT_PULLUP);
   pinMode(buttonPin14, INPUT_PULLUP);
   pinMode(buttonPin15, INPUT_PULLUP);
-
+  /*
+    The following code is the serial initailization sequence that checks for the DFPlayer on the Serial1 Tx/Rx connection
+    void loop() won't compile unless the DFPlayer Mini is detected as onlie
+  */
   if (!myDFPlayer.begin(Serial1)) {
     Serial.println("Unable to begin. Please check connections and SD card.");
     while (true);
@@ -73,7 +84,7 @@ void setup() {
 }
 
 void loop() {
-  // Read the button states DIGITAL
+  // Read the button states digital (assign buttons as digitalRead)
   int buttonState36 = digitalRead(buttonPin36);
   int buttonState37 = digitalRead(buttonPin37);
   int buttonState38 = digitalRead(buttonPin38);
@@ -92,7 +103,7 @@ void loop() {
   int buttonState51 = digitalRead(buttonPin51);
   int buttonState52 = digitalRead(buttonPin52);
   int buttonState53 = digitalRead(buttonPin53);
-  //ANALOG
+  //Analog segment
   int buttonState9 = digitalRead(buttonPin9);
   int buttonState10 = digitalRead(buttonPin10);
   int buttonState11 = digitalRead(buttonPin11);
@@ -101,9 +112,13 @@ void loop() {
   int buttonState14 = digitalRead(buttonPin14);
   int buttonState15 = digitalRead(buttonPin15);
 
+  
+  myDFPlayer.volume(20); // Set volume to 20 (range is 0 to 30), 20 is about converstation level of speaking
 
-  myDFPlayer.volume(20); // Set volume to 10 (range is 0 to 30)
-
+  /*
+    The following assigns the buttons to their associated audio files on the DFPlayer Mini's SD card
+    Serial.println() is to verify which buttons are pressed on which pins to assign correct audio files
+  */
   if (buttonState36 == LOW) {
     Serial.println("Button on pin 36 is pressed!");
     myDFPlayer.play(1); // Play file 1
@@ -209,5 +224,5 @@ void loop() {
 
 
 
-  delay(50);  // Small delay to avoid multiple detections
+  delay(50);  // Small delay to avoid multiple detections of the button press
 }
